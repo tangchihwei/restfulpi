@@ -13,8 +13,9 @@ respJson = json.loads(resp.text)
 print "User Name: "+respJson['who']
 print "Account Balance: $"+str(respJson['balance'])
 print "Last Trip: $"+str(respJson['lastTrip'])
-# print "Transit Agency: "+respJson['agency']
-# print "Trip Origin: "+respJson['origin']
-# print "Trip Destination: "+respJson['destination']
-# print "Trip Referral: "+respJson['referral']
 
+data={ "id":"CLIPPERCARD_001", "agency":"BART",	"origin":"MONTGOMERY","destination":"MILLBRAE", "referral":"GOOGLE"}
+
+resp = requests.post(backend+"ticket", json.dumps(data), headers = headers)
+respJson = json.loads(resp.text)
+print(str(respJson))
