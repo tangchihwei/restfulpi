@@ -1,7 +1,7 @@
 import requests
 import json
 
-backend = 'localhost'
+backend = 'http://localhost:5000/'
 headers = {'Content-type': 'application/json'}
 cardid = {"id":"CLIPPER_CARD_001"} 
 
