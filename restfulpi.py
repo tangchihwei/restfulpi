@@ -17,7 +17,7 @@ class GflGate():
 		self._backend = 'http://localhost:5000/'
 		self._headers = {'Content-type': 'application/json'}
 
-		#Init nfc PN532 board
+		#Init nfc PN532 board, software serial for ease of configuration
 		self._nfc_cs = 'P8_7'
 		self._nfc_mosi = 'P8_8'
 		self._nfc_miso = 'P8_9'
@@ -38,6 +38,7 @@ class GflGate():
 		ser = serial.Serial(port = "/dev/ttyS1", baudrate = 19200)
 		ser.close()
 		ser.open()
+		# TODO: return True/False for setup
 
 	def hello(self):
 		return "Hello GFL"
