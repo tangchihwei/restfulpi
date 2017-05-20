@@ -3,6 +3,9 @@ import json
 import time
 import Adafruit_BBIO.UART as UART
 import serial
+import sys
+import binascii
+import Adafruit_PN532 as PN532
 
 _cmd_left_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x01, 0x00, 0xDE, 0x62, 0x7E])
 _cmd_right_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x02, 0x00, 0x8B, 0x31, 0x7E])
@@ -10,8 +13,27 @@ _cmd_right_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00,
 
 class GflGate():
 	def __init__(self):
+		#Backend
 		self._backend = 'http://localhost:5000/'
 		self._headers = {'Content-type': 'application/json'}
+
+		#Init nfc PN532 board
+		self._nfc_cs = 'P8_7'
+		self._nfc_mosi = 'P8_8'
+		self._nfc_miso = 'P8_9'
+		self._nfc_sclk = 'P8.10'
+		pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
+
+	def setup(self):
+		# TODO: check BB-UAR1 HW config
+		print "Initializing PN532 NFC Driver"
+		pn532.begin()
+		ic, ver, rev, support = pn532.get_firmware_version()
+		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
+		pn532.SAM_configuration()
+		# TODO:check if pn532 fail..?
+
+		#Init UART1 bus on Beaglebone Black Wireless
 		UART.setup("UART1")
 		ser = serial.Serial(port = "/dev/ttyS1", baudrate = 19200)
 		ser.close()
