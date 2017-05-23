@@ -10,6 +10,11 @@ import Adafruit_PN532 as PN532
 _cmd_left_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x01, 0x00, 0xDE, 0x62, 0x7E])
 _cmd_right_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x02, 0x00, 0x8B, 0x31, 0x7E])
 
+CS   = 'P8_7'
+MOSI = 'P8_8'
+MISO = 'P8_9'
+SCLK = 'P8_10'
+
 
 class GflGate():
 	def __init__(self):
@@ -22,15 +27,16 @@ class GflGate():
 		self._nfc_mosi = 'P8_8'
 		self._nfc_miso = 'P8_9'
 		self._nfc_sclk = 'P8.10'
-		self._pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
+		self._pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 
 	def setup(self):
 		# TODO: check BB-UAR1 HW config
 		print "Initializing PN532 NFC Driver"
-		self._pn532.begin()
-		ic, ver, rev, support = pn532.get_firmware_version()
-		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
-		self._pn532.SAM_configuration()
+#		self._pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
+#		self._pn532.begin()
+#		ic, ver, rev, support = pn532.get_firmware_version()
+#		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
+#		self._pn532.SAM_configuration()
 		# TODO:check if pn532 fail..?
 
 		#Init UART1 bus on Beaglebone Black Wireless
@@ -58,10 +64,10 @@ class GflGate():
 		#TODO: wait and confirm return message
 
 	def read_card(self):
-		uid = self._pn532.read_passive_target()
-		if uid is None:
-			return None
-		print('Found card with UID: 0x{0}'.format(binascii.hexlify(uid)))
+#		uid = self._pn532.read_passive_target()
+#		if uid is None:
+#			return None
+#		print('Found card with UID: 0x{0}'.format(binascii.hexlify(uid)))
 		return "0x4566c390"
 		#TODO: read card nfc interface
 
@@ -84,7 +90,8 @@ if __name__ == "__main__":
 	gate = GflGate()
 	gate.setup()
 	print(gate.hello())
+#	pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 	# resp = gate.tap_request("CLIPPER_CARD_001")
 	# print "User Name: "+resp['who']
-	gate.run()
+#	gate.run()
 
