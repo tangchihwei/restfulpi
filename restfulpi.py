@@ -50,10 +50,12 @@ class GflGate():
 	def _turn_on_left_gate():
 		print "turn on left gate"
 		ser.write(_cmd_left_on)
+		#TODO: wait and confirm return message
 
 	def _turn_on_right_gate():
 		print "turn on right gate"
 		ser.write(_cmd_right_on)
+		#TODO: wait and confirm return message
 
 	def read_card(self):
 		return "CLIPPER_CARD_001"
