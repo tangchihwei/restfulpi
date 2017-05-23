@@ -78,6 +78,7 @@ class GflGate():
 
 if __name__ == "__main__":
 	gate = GflGate()
+	gate.setup()
 	print(gate.hello())
 	# resp = gate.tap_request("CLIPPER_CARD_001")
 	# print "User Name: "+resp['who']
