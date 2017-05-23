@@ -22,15 +22,15 @@ class GflGate():
 		self._nfc_mosi = 'P8_8'
 		self._nfc_miso = 'P8_9'
 		self._nfc_sclk = 'P8.10'
-		pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
+		self._pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
 
 	def setup(self):
 		# TODO: check BB-UAR1 HW config
 		print "Initializing PN532 NFC Driver"
-		pn532.begin()
+		self._pn532.begin()
 		ic, ver, rev, support = pn532.get_firmware_version()
 		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
-		pn532.SAM_configuration()
+		self._pn532.SAM_configuration()
 		# TODO:check if pn532 fail..?
 
 		#Init UART1 bus on Beaglebone Black Wireless
@@ -58,7 +58,11 @@ class GflGate():
 		#TODO: wait and confirm return message
 
 	def read_card(self):
-		return "CLIPPER_CARD_001"
+		uid = self._pn532.read_passive_target()
+		if uid is None:
+			return None
+		print('Found card with UID: 0x{0}'.format(binascii.hexlify(uid)))
+		return "0x4566c390"
 		#TODO: read card nfc interface
 
 	def gate_control(self, direction):
