@@ -20,7 +20,6 @@ class GflGate():
 	def setup(self):
 		# TODO: check BB-UAR1 HW config
 		print "Initializing PN532 NFC Driver"
-#		self._pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
 		self._pn532.begin()
 		ic, ver, rev, support = self._pn532.get_firmware_version()
 		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
@@ -58,7 +57,6 @@ class GflGate():
 		return_message = ('Found card with UID: 0x{0}'.format(binascii.hexlify(uid)))
 		print return_message
 		return return_message
-		# TODO: read card nfc interface
 
 	def gate_control(self, direction):
 		# TODO: call gate control 
@@ -71,16 +69,15 @@ class GflGate():
 			card_id = self.read_card()
 			if card_id is None:
 				continue
-			print "Received here: " + str(card_id)
-			# resp = self.tap_request(card_id)
+			# print "Received here: " + str(card_id)
+			resp = self.tap_request(card_id)
 			# print "User Name: "+ resp['who']
-			time.sleep(1)
+			time.sleep(2) #debounce time?
 
 if __name__ == "__main__":
 	gate = GflGate('P8_7', 'P8_8', 'P8_9','P8_10')
 	gate.setup()
 	print(gate.hello())
-#	pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 	# resp = gate.tap_request("CLIPPER_CARD_001")
 	# print "User Name: "+resp['who']
 	gate.run()
