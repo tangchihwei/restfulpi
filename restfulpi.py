@@ -24,7 +24,7 @@ class GflGate():
 		self._pn532.begin()
 		ic, ver, rev, support = self._pn532.get_firmware_version()
 		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
-#		self._pn532.SAM_configuration()
+		self._pn532.SAM_configuration()
 		# TODO:check if pn532 fail..?
 
 		#Init UART1 bus on Beaglebone Black Wireless
@@ -52,12 +52,13 @@ class GflGate():
 		#TODO: wait and confirm return message
 
 	def read_card(self):
-#		uid = self._pn532.read_passive_target()
-#		if uid is None:
-#			return None
-#		print('Found card with UID: 0x{0}'.format(binascii.hexlify(uid)))
-		return "0x4566c390"
-		#TODO: read card nfc interface
+		uid = self._pn532.read_passive_target()
+		if uid is None:
+			return None
+		return_message = ('Found card with UID: 0x{0}'.format(binascii.hexlify(uid)))
+		print return_message
+		return return_message
+		# TODO: read card nfc interface
 
 	def gate_control(self, direction):
 		# TODO: call gate control 
@@ -70,8 +71,9 @@ class GflGate():
 			card_id = self.read_card()
 			if card_id is None:
 				continue
-			resp = self.tap_request(card_id)
-			print "User Name: "+ resp['who']
+			print "Received here: " + str(card_id)
+			# resp = self.tap_request(card_id)
+			# print "User Name: "+ resp['who']
 			time.sleep(1)
 
 if __name__ == "__main__":
@@ -81,5 +83,5 @@ if __name__ == "__main__":
 #	pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 	# resp = gate.tap_request("CLIPPER_CARD_001")
 	# print "User Name: "+resp['who']
-#	gate.run()
+	gate.run()
 
