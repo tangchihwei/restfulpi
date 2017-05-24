@@ -10,12 +10,6 @@ import Adafruit_PN532 as PN532
 _cmd_left_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x01, 0x00, 0xDE, 0x62, 0x7E])
 _cmd_right_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x02, 0x00, 0x8B, 0x31, 0x7E])
 
-# CS   = 'P8_7'
-# MOSI = 'P8_8'
-# MISO = 'P8_9'
-# SCLK = 'P8_10'
-
-
 class GflGate():
 	def __init__(self, CS, MOSI, MISO, SCLK):
 		#Backend
@@ -27,9 +21,9 @@ class GflGate():
 		# TODO: check BB-UAR1 HW config
 		print "Initializing PN532 NFC Driver"
 #		self._pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
-#		self._pn532.begin()
-#		ic, ver, rev, support = pn532.get_firmware_version()
-#		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
+		self._pn532.begin()
+		ic, ver, rev, support = self._pn532.get_firmware_version()
+		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
 #		self._pn532.SAM_configuration()
 		# TODO:check if pn532 fail..?
 
