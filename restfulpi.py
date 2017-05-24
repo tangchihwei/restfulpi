@@ -10,25 +10,19 @@ import Adafruit_PN532 as PN532
 _cmd_left_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x01, 0x00, 0xDE, 0x62, 0x7E])
 _cmd_right_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x02, 0x00, 0x8B, 0x31, 0x7E])
 
-
 class GflGate():
-	def __init__(self):
+	def __init__(self, CS, MOSI, MISO, SCLK):
 		#Backend
 		self._backend = 'http://localhost:5000/'
 		self._headers = {'Content-type': 'application/json'}
-
-		#Init nfc PN532 board, software serial for ease of configuration
-		self._nfc_cs = 'P8_7'
-		self._nfc_mosi = 'P8_8'
-		self._nfc_miso = 'P8_9'
-		self._nfc_sclk = 'P8.10'
-		self._pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
+		self._pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 
 	def setup(self):
 		# TODO: check BB-UAR1 HW config
 		print "Initializing PN532 NFC Driver"
+#		self._pn532 = PN532.PN532(cs = self._nfc_cs, sclk = self._nfc_sclk, mosi = self._nfc_mosi, miso = self._nfc_miso)
 		self._pn532.begin()
-		ic, ver, rev, support = pn532.get_firmware_version()
+		ic, ver, rev, support = self._pn532.get_firmware_version()
 		print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
 		self._pn532.SAM_configuration()
 		# TODO:check if pn532 fail..?
@@ -61,9 +55,10 @@ class GflGate():
 		uid = self._pn532.read_passive_target()
 		if uid is None:
 			return None
-		print('Found card with UID: 0x{0}'.format(binascii.hexlify(uid)))
-		return "0x4566c390"
-		#TODO: read card nfc interface
+		return_message = ('Found card with UID: 0x{0}'.format(binascii.hexlify(uid)))
+		print return_message
+		return return_message
+		# TODO: read card nfc interface
 
 	def gate_control(self, direction):
 		# TODO: call gate control 
@@ -76,14 +71,16 @@ class GflGate():
 			card_id = self.read_card()
 			if card_id is None:
 				continue
-			resp = self.tap_request(card_id)
-			print "User Name: "+ resp['who']
+			print "Received here: " + str(card_id)
+			# resp = self.tap_request(card_id)
+			# print "User Name: "+ resp['who']
 			time.sleep(1)
 
 if __name__ == "__main__":
-	gate = GflGate()
+	gate = GflGate('P8_7', 'P8_8', 'P8_9','P8_10')
 	gate.setup()
 	print(gate.hello())
+#	pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 	# resp = gate.tap_request("CLIPPER_CARD_001")
 	# print "User Name: "+resp['who']
 	gate.run()
