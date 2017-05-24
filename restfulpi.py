@@ -10,23 +10,17 @@ import Adafruit_PN532 as PN532
 _cmd_left_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x01, 0x00, 0xDE, 0x62, 0x7E])
 _cmd_right_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00, 0x01, 0x02, 0x00, 0x8B, 0x31, 0x7E])
 
-CS   = 'P8_7'
-MOSI = 'P8_8'
-MISO = 'P8_9'
-SCLK = 'P8_10'
+# CS   = 'P8_7'
+# MOSI = 'P8_8'
+# MISO = 'P8_9'
+# SCLK = 'P8_10'
 
 
 class GflGate():
-	def __init__(self):
+	def __init__(self, CS, MOSI, MISO, SCLK):
 		#Backend
 		self._backend = 'http://localhost:5000/'
 		self._headers = {'Content-type': 'application/json'}
-
-		#Init nfc PN532 board, software serial for ease of configuration
-		self._nfc_cs = 'P8_7'
-		self._nfc_mosi = 'P8_8'
-		self._nfc_miso = 'P8_9'
-		self._nfc_sclk = 'P8.10'
 		self._pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 
 	def setup(self):
@@ -87,7 +81,7 @@ class GflGate():
 			time.sleep(1)
 
 if __name__ == "__main__":
-	gate = GflGate()
+	gate = GflGate('P8_7', 'P8_8', 'P8_9','P8_10')
 	gate.setup()
 	print(gate.hello())
 #	pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
