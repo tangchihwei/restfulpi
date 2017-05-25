@@ -17,6 +17,16 @@ class GflGate():
 		self._headers = {'Content-type': 'application/json'}
 		self._pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 
+		# Init HTTP request body
+		# self._http_body = {"cardId":"CARD_001","agency":"BART","location":"MONTGOMERY","machineId":"BART_M_0001"}
+		self._location = "Taipei Train Station"
+		self._agency = "MRT"
+		self._machine_id = "MRT_TPE_M_001"
+		self_.http_body = {}
+		self_.http_body["agency"] = self._agency
+		self_.http_body["location"] = self._location
+		self_.http_body["machineId"] = self._machine_id
+		
 	def setup(self):
 		# TODO: check BB-UAR1 HW config
 		print "Initializing PN532 NFC Driver"
@@ -31,7 +41,8 @@ class GflGate():
 		ser = serial.Serial(port = "/dev/ttyS1", baudrate = 19200)
 		ser.close()
 		ser.open()
-		# TODO: return True/False for setup
+		# TODO: return True/False for setup	
+
 
 	def hello(self):
 		return "Hello GFL"
