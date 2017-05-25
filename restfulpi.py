@@ -14,6 +14,7 @@ class GflGate():
 	def __init__(self, CS, MOSI, MISO, SCLK):
 		#Backend
 		self._backend = 'http://localhost:5000/'
+		self._backend_heroku = 'https://gfl-turnstile.herokuapp.com/'
 		self._headers = {'Content-type': 'application/json'}
 		self._pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 
@@ -37,8 +38,14 @@ class GflGate():
 		return "Hello GFL"
 
 	def tap_request(self, card_id):
-		tap_resp = json.loads(requests.get(self._backend + "user/"+str(card_id)).text)
-		return tap_resp #return dictionary form
+		HEADERS = {'Content-Type': "application/json"}
+		BODY = { "cardId": str(card_id),
+				"agency": "BART",
+				"location": "MONTGOMERY",
+				"machineId": "BART_M_0001"
+				}
+		tap_resp = requests.post(self._backend + "tap", headers=HEADERS, data=json.dumps(BODY))
+		return json.load(tap_resp.text) #return dictionary form
 
 	def _turn_on_left_gate():
 		print "turn on left gate"
@@ -78,7 +85,7 @@ if __name__ == "__main__":
 	gate = GflGate('P8_7', 'P8_8', 'P8_9','P8_10')
 	gate.setup()
 	print(gate.hello())
-	# resp = gate.tap_request("CLIPPER_CARD_001")
-	# print "User Name: "+resp['who']
-	gate.run()
+	resp = gate.tap_request("CLIPPER_CARD_001")
+	print "User Name: "+resp['who']
+	#gate.run()
 
