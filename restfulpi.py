@@ -13,7 +13,7 @@ _cmd_right_on = bytearray([0x7E, 0x80, 0x00, 0x01, 0x00, 0x00, 0x80, 0xAA, 0x00,
 class GflGate():
 	def __init__(self, CS, MOSI, MISO, SCLK):
 		#Backend
-		self._backend = 'http://localhost:5000/'
+		self._backend = 'http://localhost:5000/tap'
 		self._headers = {'Content-type': 'application/json'}
 		self._pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 
@@ -26,7 +26,7 @@ class GflGate():
 		self_.http_body["agency"] = self._agency
 		self_.http_body["location"] = self._location
 		self_.http_body["machineId"] = self._machine_id
-		
+
 	def setup(self):
 		# TODO: check BB-UAR1 HW config
 		print "Initializing PN532 NFC Driver"
@@ -48,7 +48,10 @@ class GflGate():
 		return "Hello GFL"
 
 	def tap_request(self, card_id):
-		tap_resp = json.loads(requests.get(self._backend + "user/"+str(card_id)).text)
+		# update user id and requst access
+		self._http_body["cardId"] = card_id
+		tap_resp = json.loads(requests.post(self._backend, json.dumps(self._http_body), headers = self._headers).text)
+
 		return tap_resp #return dictionary form
 
 	def _turn_on_left_gate():
