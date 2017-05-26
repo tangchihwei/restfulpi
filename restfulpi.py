@@ -14,6 +14,8 @@ class GflGate():
 	def __init__(self, CS, MOSI, MISO, SCLK):
 		#Backend
 		self._backend = 'http://localhost:5000/'
+		self._backend_heroku = 'https://gfl-turnstile.herokuapp.com/'
+		self._backend = 'https://gfl-turnstile.herokuapp.com/'
 		self._headers = {'Content-type': 'application/json'}
 		self._pn532 = PN532.PN532(cs=CS, sclk=SCLK, mosi=MOSI, miso=MISO)
 
@@ -28,26 +30,32 @@ class GflGate():
 
 		#Init UART1 bus on Beaglebone Black Wireless
 		UART.setup("UART1")
-		ser = serial.Serial(port = "/dev/ttyS1", baudrate = 19200)
-		ser.close()
-		ser.open()
+		self.ser = serial.Serial(port = "/dev/ttyS1", baudrate = 19200)
+		self.ser.close()
+		self.ser.open()
 		# TODO: return True/False for setup
 
 	def hello(self):
 		return "Hello GFL"
 
 	def tap_request(self, card_id):
-		tap_resp = json.loads(requests.get(self._backend + "user/"+str(card_id)).text)
-		return tap_resp #return dictionary form
+		HEADERS = {'Content-Type': "application/json"}
+		BODY = { "cardId": str(card_id),
+				"agency": "BART",
+				"location": "MONTGOMERY",
+				"machineId": "BART_M_0001"
+				}
+		tap_resp = requests.post(self._backend + "tap", headers=HEADERS, data=json.dumps(BODY))
+		return json.loads(tap_resp.text) #return dictionary form
 
-	def _turn_on_left_gate():
+	def _turn_on_left_gate(self):
 		print "turn on left gate"
-		ser.write(_cmd_left_on)
+		self.ser.write(_cmd_left_on)
 		#TODO: wait and confirm return message
 
-	def _turn_on_right_gate():
+	def _turn_on_right_gate(self):
 		print "turn on right gate"
-		ser.write(_cmd_right_on)
+		self.ser.write(_cmd_right_on)
 		#TODO: wait and confirm return message
 
 	def read_card(self):
@@ -69,16 +77,20 @@ class GflGate():
 			card_id = self.read_card()
 			if card_id is None:
 				continue
+                        else:
+                            print("how do I open gate?")
 			# print "Received here: " + str(card_id)
 			resp = self.tap_request(card_id)
-			# print "User Name: "+ resp['who']
+			print "User Name: "+ str(resp)
+                        if resp["response"]["allowAccess"]:
+                            self._turn_on_right_gate()
+
 			time.sleep(2) #debounce time?
 
 if __name__ == "__main__":
 	gate = GflGate('P8_7', 'P8_8', 'P8_9','P8_10')
 	gate.setup()
 	print(gate.hello())
-	# resp = gate.tap_request("CLIPPER_CARD_001")
-	# print "User Name: "+resp['who']
+	#resp = gate.tap_request("CLIPPER_CARD_001")
+	#print "User Name: "+str(resp)
 	gate.run()
-
