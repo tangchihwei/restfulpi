@@ -34,6 +34,9 @@ class GflGate():
 		self.ser.close()
 		self.ser.open()
 		# TODO: return True/False for setup
+		
+		# TODO: reset balance
+		self.reset_balance()
 	def reset_balance(self):
 		resp = requests.get(self._backend + "startDemo")
 
