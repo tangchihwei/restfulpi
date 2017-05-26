@@ -30,9 +30,9 @@ class GflGate():
 
 		#Init UART1 bus on Beaglebone Black Wireless
 		UART.setup("UART1")
-		ser = serial.Serial(port = "/dev/ttyS1", baudrate = 19200)
-		ser.close()
-		ser.open()
+		self.ser = serial.Serial(port = "/dev/ttyS1", baudrate = 19200)
+		self.ser.close()
+		self.ser.open()
 		# TODO: return True/False for setup
 
 	def hello(self):
@@ -48,14 +48,14 @@ class GflGate():
 		tap_resp = requests.post(self._backend + "tap", headers=HEADERS, data=json.dumps(BODY))
 		return json.loads(tap_resp.text) #return dictionary form
 
-	def _turn_on_left_gate():
+	def _turn_on_left_gate(self):
 		print "turn on left gate"
-		ser.write(_cmd_left_on)
+		self.ser.write(_cmd_left_on)
 		#TODO: wait and confirm return message
 
-	def _turn_on_right_gate():
+	def _turn_on_right_gate(self):
 		print "turn on right gate"
-		ser.write(_cmd_right_on)
+		self.ser.write(_cmd_right_on)
 		#TODO: wait and confirm return message
 
 	def read_card(self):
@@ -77,9 +77,14 @@ class GflGate():
 			card_id = self.read_card()
 			if card_id is None:
 				continue
+                        else:
+                            print("how do I open gate?")
 			# print "Received here: " + str(card_id)
 			resp = self.tap_request(card_id)
 			print "User Name: "+ str(resp)
+                        if resp["response"]["allowAccess"]:
+                            self._turn_on_right_gate()
+
 			time.sleep(2) #debounce time?
 
 if __name__ == "__main__":
@@ -89,4 +94,3 @@ if __name__ == "__main__":
 	#resp = gate.tap_request("CLIPPER_CARD_001")
 	#print "User Name: "+str(resp)
 	gate.run()
-
